@@ -1,0 +1,5 @@
+# Local environment variables
+.env
+
+# Dependencies (optional, but highly recommended for Node apps)
+node_modules/
