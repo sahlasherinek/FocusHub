@@ -28,6 +28,13 @@ server.listen(PORT, () => {
     .then(() => {
       console.log('Successfully connected to MongoDB');
 
+      app.get('/', (req, res) => {
+        res.status(200).json({
+          message: 'FocusHub API is running',
+          health: '/health',
+        });
+      });
+
       //health check route
       app.get("/health", (req, res) => {
         res.status(200).json({
