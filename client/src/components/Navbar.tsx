@@ -3,7 +3,6 @@ import { LogOut, CheckSquare, Trash2, Sun, Moon } from 'lucide-react';
 import DeleteAccountModal from './DeleteAccountModal';
 import { deleteAccount } from '../services/api';
 import { useTheme } from '../context/ThemeContext';
-import axios from 'axios';
 
 
 interface NavbarProps {
