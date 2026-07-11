@@ -19,45 +19,37 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(() => {
-        const stored = localStorage.getItem('user');
+        const stored = sessionStorage.getItem('user');
         return stored ? JSON.parse(stored) : null;
     });
     const [sessionExpired, setSessionExpired] = useState(false);
 
     const login = (token: string, newUser: User) => {
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(newUser));
+        sessionStorage.setItem('token', token);
+        sessionStorage.setItem('user', JSON.stringify(newUser));
         setUser(newUser);
     };
 
     const logout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
         setUser(null);
         setSessionExpired(false);
     };
 
     // Called after the user successfully re-enters their password in the modal
     const resumeSession = (token: string, refreshedUser: User) => {
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(refreshedUser));
+        sessionStorage.setItem('token', token);
+        sessionStorage.setItem('user', JSON.stringify(refreshedUser));
         setUser(refreshedUser);
         setSessionExpired(false);
     };
 
     useEffect(() => {
-        const handleStorageChange = (e: StorageEvent) => {
-            if (e.key === 'user' || e.key === 'token') {
-                const stored = localStorage.getItem('user');
-                setUser(stored ? JSON.parse(stored) : null);
-            }
-        };
         const handleSessionExpired = () => setSessionExpired(true);
 
-        window.addEventListener('storage', handleStorageChange);
         window.addEventListener('session-expired', handleSessionExpired);
         return () => {
-            window.removeEventListener('storage', handleStorageChange);
             window.removeEventListener('session-expired', handleSessionExpired);
         };
     }, []);

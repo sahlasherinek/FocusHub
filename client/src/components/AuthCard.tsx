@@ -38,7 +38,7 @@ export default function AuthCard({ onAuthSuccess }: AuthCardProps) {
         setLoading(true);
         try {
             const data = await loginOrRegister(email.trim(), password);
-            onAuthSuccess(data.token, data.user); // AuthProvider's login() now handles localStorage internally
+            onAuthSuccess(data.token, data.user); // AuthProvider's login() now handles sessionStorage internally
         } catch (err) {
             setError(axios.isAxiosError(err) ? err.response?.data?.message ?? 'Authentication failed' : 'Authentication failed');
         } finally {

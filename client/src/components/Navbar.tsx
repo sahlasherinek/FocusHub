@@ -21,8 +21,8 @@ export default function Navbar({ userEmail, onLogout }: NavbarProps) {
         setDeleting(true);
         try {
             await deleteAccount();
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
+            sessionStorage.removeItem('token');
+            sessionStorage.removeItem('user');
             window.location.href = '/';
         } catch (err) {
             setDeleting(false);
