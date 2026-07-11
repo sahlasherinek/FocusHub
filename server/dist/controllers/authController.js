@@ -3,9 +3,36 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.unifiedLogin = void 0;
+exports.unifiedLogin = exports.deleteAccount = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const User_1 = __importDefault(require("../models/User"));
+const Todo_1 = __importDefault(require("../models/Todo"));
+const mongoose_1 = __importDefault(require("mongoose"));
+const deleteAccount = async (req, res) => {
+    const userId = req.user.id;
+    const session = await mongoose_1.default.startSession();
+    try {
+        session.startTransaction();
+        await Todo_1.default.deleteMany({ user: userId }, { session });
+        const deletedUser = await User_1.default.findByIdAndDelete(userId, { session });
+        if (!deletedUser) {
+            // User didn't exist (already deleted / bad token) — abort, nothing to commit
+            await session.abortTransaction();
+            session.endSession();
+            return res.status(404).json({ message: 'User not found' });
+        }
+        await session.commitTransaction();
+        session.endSession();
+        return res.status(200).json({ message: 'Account deleted successfully' });
+    }
+    catch (err) {
+        await session.abortTransaction();
+        session.endSession();
+        console.error('Delete account error:', err);
+        return res.status(500).json({ message: 'Failed to delete account' });
+    }
+};
+exports.deleteAccount = deleteAccount;
 const generateToken = (userId) => {
     return jsonwebtoken_1.default.sign({ id: userId }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_IN || '7d',
@@ -34,6 +61,13 @@ const unifiedLogin = async (req, res) => {
             // New user: register automatically
             user = await User_1.default.create({ email: normalizedEmail, password });
             isNewUser = true;
+        }
+        if (!email || !password) {
+            return res.status(400).json({ message: 'Email and password are required' });
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email.trim())) {
+            return res.status(400).json({ message: 'Please enter a valid email address' });
         }
         const token = generateToken(user.id);
         return res.status(200).json({

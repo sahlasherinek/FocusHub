@@ -20,13 +20,6 @@ app.use(express_1.default.json());
 // Routes Setup
 app.use('/api/auth', authRoutes_1.default); // public: unified login/register
 app.use('/api/todos', auth_1.auth, todoRoutes_1.default);
-console.log('Connecting to:', process.env.MONGO_URI ? 'URI found' : 'MONGO_URI is undefined!');
-mongoose_1.default.connect(process.env.MONGO_URI || '')
-    .then(() => {
-    console.log('Successfully connected to MongoDB');
-    // ... rest as before
-})
-    .catch(err => console.error('Database connection breakdown error:', err));
 // MongoDB Connection
 mongoose_1.default.connect(process.env.MONGO_URI || '')
     .then(() => {

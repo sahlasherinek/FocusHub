@@ -20,33 +20,35 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);          // public: unified login/register
 app.use('/api/todos', auth, todoRoutes);
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGO_URI || '')
-  .then(() => {
-    console.log('Successfully connected to MongoDB');
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 
-    //health check route
-    app.get("/health", (req, res) => {
-      res.status(200).json({
-        success: true,
-        message: "Server is running successfully",
-        timestamp: new Date().toISOString(),
+  // MongoDB Connection
+  mongoose.connect(process.env.MONGO_URI || '')
+    .then(() => {
+      console.log('Successfully connected to MongoDB');
+
+      //health check route
+      app.get("/health", (req, res) => {
+        res.status(200).json({
+          success: true,
+          message: "Server is running successfully",
+          timestamp: new Date().toISOString(),
+        });
       });
-    });
 
-    server.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
 
+
+    })
+    .catch((err: unknown) => console.error('Database connection breakdown error:', err));
+  // Graceful shutdown
+  process.on("SIGTERM", () => {
+    console.log("SIGTERM signal received: closing HTTP server");
+    server.close(() => {
+      console.log("HTTP server closed");
+      process.exit(0);
     });
-    // Graceful shutdown
-    process.on("SIGTERM", () => {
-      console.log("SIGTERM signal received: closing HTTP server");
-      server.close(() => {
-        console.log("HTTP server closed");
-        process.exit(0);
-      });
-    });
-  })
-  .catch(err => console.error('Database connection breakdown error:', err));
+  });
+});
 
 
