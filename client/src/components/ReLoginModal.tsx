@@ -1,8 +1,10 @@
-import { useState, FormEvent } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { Lock } from 'lucide-react';
 import { loginOrRegister } from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import type { FormEvent, KeyboardEvent } from 'react';
+import type { ReactNode } from 'react';
 
 interface ReLoginModalProps {
     userEmail: string;

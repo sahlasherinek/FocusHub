@@ -3,6 +3,8 @@ import { LogOut, CheckSquare, Trash2, Sun, Moon } from 'lucide-react';
 import DeleteAccountModal from './DeleteAccountModal';
 import { deleteAccount } from '../services/api';
 import { useTheme } from '../context/ThemeContext';
+import axios from 'axios';
+
 
 interface NavbarProps {
     userEmail?: string;
@@ -25,7 +27,8 @@ export default function Navbar({ userEmail, onLogout }: NavbarProps) {
             window.location.href = '/';
         } catch (err) {
             setDeleting(false);
-            alert(axios.isAxiosError(err) ? err.response?.data?.message ?? 'Failed to delete account' : 'Failed to delete account');
+            const message = err instanceof Error ? err.message : 'Failed to delete account';
+            alert(message);
         }
     };
 

@@ -1,7 +1,9 @@
-import { useState, useEffect, useMemo, FormEvent, KeyboardEvent } from 'react';
+import { useState, useEffect, useMemo, } from 'react';
 import { Search, Plus, Trash2, Pencil, X, Circle, CircleDot, CheckCircle2 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { getTodos, createTodo, updateTodo, deleteTodo } from '../services/api';
+import type { FormEvent, KeyboardEvent } from 'react';
+import type { JSX } from 'react';
 
 type TodoStatus = 'Not Started' | 'In Progress' | 'Completed';
 type TodoPriority = 'Low' | 'Medium' | 'High';
@@ -22,7 +24,7 @@ type Filter = 'All' | TodoStatus;
 
 const STATUS_OPTIONS: TodoStatus[] = ['Not Started', 'In Progress', 'Completed'];
 
-export default function TodoDashboard({ userEmail }: TodoDashboardProps) {
+export default function TodoDashboard({ }: TodoDashboardProps) {
     const [todos, setTodos] = useState<Todo[]>([]);
     const [newTitle, setNewTitle] = useState('');
     const [newPriority, setNewPriority] = useState<TodoPriority>('Medium');
