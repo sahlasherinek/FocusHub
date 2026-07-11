@@ -2,10 +2,12 @@ import { useState, type FormEvent } from 'react';
 import { Mail, Lock, Loader2 } from 'lucide-react';
 import { loginOrRegister } from '../services/api';
 import { isValidEmail } from '../utils/validation';
+import axios from 'axios';
 
 interface AuthCardProps {
-    onAuthSuccess: (token: string, user: { id: string; email: string }) => void;
+    onAuthSuccess: (token: string, user: { id: string; email: string; role: string }) => void;
 }
+
 
 export default function AuthCard({ onAuthSuccess }: AuthCardProps) {
     const [email, setEmail] = useState('');
@@ -36,11 +38,9 @@ export default function AuthCard({ onAuthSuccess }: AuthCardProps) {
         setLoading(true);
         try {
             const data = await loginOrRegister(email.trim(), password);
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('user', JSON.stringify(data.user));
-            onAuthSuccess(data.token, data.user);
+            onAuthSuccess(data.token, data.user); // AuthProvider's login() now handles localStorage internally
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Authentication failed');
+            setError(axios.isAxiosError(err) ? err.response?.data?.message ?? 'Authentication failed' : 'Authentication failed');
         } finally {
             setLoading(false);
         }

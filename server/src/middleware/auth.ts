@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
 export interface AuthRequest extends Request {
-    user?: { id: string };
+    user?: { id: string; role: string };
 }
 
 export const auth = (req: AuthRequest, res: Response, next: NextFunction) => {
@@ -15,8 +15,8 @@ export const auth = (req: AuthRequest, res: Response, next: NextFunction) => {
     const token = authHeader.split(' ')[1];
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string };
-        req.user = { id: decoded.id };
+        const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: string; role: string };
+        req.user = { id: decoded.id, role: decoded.role };
         next();
     } catch (err) {
         return res.status(401).json({ message: 'Token is invalid or expired' });

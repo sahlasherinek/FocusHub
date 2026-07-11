@@ -25,7 +25,7 @@ export default function Navbar({ userEmail, onLogout }: NavbarProps) {
             window.location.href = '/';
         } catch (err) {
             setDeleting(false);
-            alert(err instanceof Error ? err.message : 'Failed to delete account');
+            alert(axios.isAxiosError(err) ? err.response?.data?.message ?? 'Failed to delete account' : 'Failed to delete account');
         }
     };
 

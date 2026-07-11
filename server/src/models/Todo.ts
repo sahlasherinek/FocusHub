@@ -1,8 +1,10 @@
 import mongoose, { Document, Schema, Model, Types } from 'mongoose';
 
+export type TodoStatus = 'Not Started' | 'In Progress' | 'Completed';
+
 export interface ITodo extends Document {
   title: string;
-  completed: boolean;
+  status: TodoStatus;
   priority: 'Low' | 'Medium' | 'High';
   user: Types.ObjectId;
 }
@@ -10,18 +12,13 @@ export interface ITodo extends Document {
 const todoSchema = new Schema<ITodo>(
   {
     title: { type: String, required: true, trim: true },
-    completed: { type: Boolean, default: false },
-    priority: {
+    status: {
       type: String,
-      enum: ['Low', 'Medium', 'High'],
-      default: 'Medium',
+      enum: ['Not Started', 'In Progress', 'Completed'],
+      default: 'Not Started',
     },
-    user: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-      index: true, // speeds up "find all todos for this user" queries
-    },
+    priority: { type: String, enum: ['Low', 'Medium', 'High'], default: 'Medium' },
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
   },
   { timestamps: true }
 );

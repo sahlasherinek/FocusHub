@@ -1,44 +1,22 @@
-import { useState, useEffect } from 'react';
+import './App.css';
 import AuthCard from './components/AuthCard';
 import TodoDashboard from './components/TodoDashboard';
 import Navbar from './components/Navbar';
-
-interface User {
-  id: string;
-  email: string;
-}
+import ReLoginModal from './components/ReLoginModal';
+import { useAuth } from './context/AuthContext';
 
 function App() {
-  const [user, setUser] = useState<User | null>(null);
-  const [checking, setChecking] = useState(true);
-
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
-    if (token && storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setChecking(false);
-  }, []);
-
-  const handleAuthSuccess = (_token: string, authedUser: User) => setUser(authedUser);
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setUser(null);
-  };
-
-  if (checking) return null;
+  const { user, sessionExpired, login, logout } = useAuth();
 
   return (
     <>
-      <Navbar userEmail={user?.email} onLogout={user ? handleLogout : undefined} />
+      <Navbar userEmail={user?.email} onLogout={user ? logout : undefined} />
       {user ? (
-        <TodoDashboard userEmail={user.email} onLogout={handleLogout} />
+        <TodoDashboard userEmail={user.email} onLogout={logout} />
       ) : (
-        <AuthCard onAuthSuccess={handleAuthSuccess} />
+        <AuthCard onAuthSuccess={login} />
       )}
+      {sessionExpired && user && <ReLoginModal userEmail={user.email} />}
     </>
   );
 }
